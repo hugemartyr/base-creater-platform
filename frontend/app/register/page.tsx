@@ -2,87 +2,97 @@
 
 import { useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
-import CreatorRegistryABI from "../../lib/abis/CreatorRegistry.json";
-import { uploadToPinata } from "@/utils/ipfs";
+import { creatorRegistryAddress, creatorRegistryABI } from "../../lib/creatorRegistry";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { config } from '../../lib/config';
-import { WagmiProvider } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
-
-const CONTRACT_ADDRESS = "0xYourDeployedAddress"; // Replace with your address
-const queryClient = new QueryClient()
 
 export default function RegisterPage() {
-//   const { address, isConnected } = useAccount();
-  const { writeContractAsync, isPending } = useWriteContract();
+  const { address, isConnected } = useAccount();
+  const { writeContract, isPending } = useWriteContract();
+  const router = useRouter();
 
   const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [profileURI, setProfileURI] = useState("");
+  const [txHash, setTxHash] = useState("");
 
-  const handleSubmit = async () => {
-    if (!file || !name) {
-      toast.error("Missing name or profile image");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !profileURI || !isConnected) {
+      toast.error("Missing name or profile image URL");
       return;
     }
 
     try {
-      toast("Uploading to IPFS...");
-      const ipfsURI = await uploadToPinata(name, bio, file);
-
-      toast("Registering on chain...");
-      await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        abi: CreatorRegistryABI,
-        functionName: "registerCreator",
-        args: [name, ipfsURI],
-      });
-
-      toast.success("Creator registered!");
+      toast("Registering on-chain...");
+      writeContract(
+        {
+          abi: creatorRegistryABI,
+          address: creatorRegistryAddress,
+          functionName: "registerCreator",
+          args: [name, profileURI],
+        },
+        {
+          onSuccess(txHash) {
+            setTxHash(txHash);
+            toast.success("Successfully registered!");
+          },
+          onError(error) {
+            console.error("Registration failed:", error);
+            toast.error(`Registration failed: ${error.message}`);
+          },
+        }
+      );
     } catch (err: any) {
       toast.error(`Error: ${err.message}`);
     }
   };
 
+  return (
+    <div className="max-w-xl mx-auto mt-10 p-4 space-y-6">
+      <h1 className="text-2xl font-bold">Register as a Creator</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label>Name</Label>
+          <Input
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <Label>Profile Image URL</Label>
+          <Input
+            placeholder="https://example.com/profile.jpg"
+            value={profileURI}
+            onChange={(e) => setProfileURI(e.target.value)}
+            required
+          />
+        </div>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Registering..." : "Register"}
+        </Button>
+      </form>
 
-
-return (
-    <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-
-             <div className="max-w-md mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Register as Creator</h1>
-
-      <div>
-        <Label>Name</Label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      <div className="flex gap-4 pt-4">
+        <Button onClick={() => router.push("/creators")}>View Creators</Button>
       </div>
 
-      <div>
-        <Label>Bio</Label>
-        <Textarea value={bio} onChange={(e) => setBio(e.target.value)} />
-      </div>
-
-      <div>
-        <Label>Profile Image</Label>
-        <Input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-      </div>
-
-      <Button disabled={isPending} onClick={handleSubmit}>
-        {isPending ? "Registering..." : "Register"}
-      </Button>
+      {txHash && (
+        <p className="text-green-600">
+          Success! View tx:{" "}
+          <a
+            href={`https://sepolia.basescan.org/tx/${txHash}`}
+            className="underline"
+            target="_blank"
+          >
+            {txHash.slice(0, 10)}...
+          </a>
+        </p>
+      )}
     </div>
-            
-
-           </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
-);
+  );
 }
-
