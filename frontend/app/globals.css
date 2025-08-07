@@ -122,3 +122,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes fade-in-up {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s cubic-bezier(0.4,0,0.2,1) both;
+  }
+
+  @keyframes fade-in-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in-down {
+    animation: fade-in-down 0.8s cubic-bezier(0.4,0,0.2,1) both;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 0px 0 var(--primary);
+    }
+    50% {
+      box-shadow: 0 0 16px 2px var(--primary);
+    }
+  }
+  .animate-glow {
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow-card {
+    0%, 100% {
+      box-shadow: 0 0 0px 0 var(--primary);
+    }
+    50% {
+      box-shadow: 0 0 24px 2px var(--primary);
+    }
+  }
+  .animate-glow-card {
+    animation: glow-card 2.5s infinite alternate;
+  }
+}

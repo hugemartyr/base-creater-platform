@@ -1,4 +1,3 @@
-// app/page.tsx
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
@@ -11,25 +10,27 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { ModeToggle } from '@/components/themeToggle';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';  
-
-
-
-
-
+import { useRouter } from 'next/navigation';
+import HeroSection from '@/components/HeroSection';
+import FeaturesSection from '@/components/FeaturesSection';
+import BenefitsSection from '@/components/BenefitsSection';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
+import HowItWorksSection from '@/components/HowItWorksSection';
 
 export default function Home() {
-const router = useRouter();
+  const router = useRouter();
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-       
-          <ConnectButton />
-           <Button onClick={() => router.push("/register")}>
-        Register as Creator
-      </Button>
-        
-      <ModeToggle />
-    </main>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="flex flex-col">
+        <HeroSection />
+        <HowItWorksSection />
+        <FeaturesSection />
+        <BenefitsSection />
+      </main>
+      <Footer />
+    </div>
   );
 }
