@@ -1,4 +1,4 @@
- [
+[
 	{
 		"anonymous": false,
 		"inputs": [
@@ -17,7 +17,7 @@
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "profileURI",
+				"name": "profileBio",
 				"type": "string"
 			}
 		],
@@ -33,7 +33,7 @@
 			},
 			{
 				"internalType": "string",
-				"name": "profileURI",
+				"name": "profileBio",
 				"type": "string"
 			}
 		],
@@ -78,7 +78,7 @@
 			},
 			{
 				"internalType": "string",
-				"name": "profileURI",
+				"name": "profileBio",
 				"type": "string"
 			},
 			{
@@ -122,7 +122,7 @@
 					},
 					{
 						"internalType": "string",
-						"name": "profileURI",
+						"name": "profileBio",
 						"type": "string"
 					},
 					{

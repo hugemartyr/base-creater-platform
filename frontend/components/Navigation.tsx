@@ -4,6 +4,13 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ModeToggle } from './themeToggle';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
 
 export default function Navigation() {
   const router = useRouter();
@@ -30,6 +37,39 @@ export default function Navigation() {
           >
             Register
           </Button>
+          <Button 
+            variant="ghost" 
+            onClick={() => router.push('/funding-rounds')}
+            className="hidden sm:inline-flex"
+          >
+            Funding Rounds
+          </Button>
+          <Button 
+            variant="ghost" 
+            onClick={() => router.push('/vote')}
+            className="hidden sm:inline-flex"
+          >
+            Vote
+          </Button>
+          
+          {/* Dropdown menu for additional items */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="hidden sm:inline-flex">
+                More
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => router.push('/contributor')}>
+                Contributor
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/about')}>
+                About
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <ConnectButton />
           <ModeToggle />
         </div>
